@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Digital Resume of Shayam Satish Shetty — 4th-Year AI & ML Engineering Student and Full-Stack & AI-Assisted Builder at SMVITM (VTU).">
+  <meta name="author" content="Shayam Satish Shetty">
+  <title>Shayam Satish Shetty | Digital Resume & Portfolio</title>
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Floating Toast Notification -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <span class="toast-icon">✓</span>
+    <span id="toast-message">Email copied to clipboard!</span>
+  </div>
+
+  <!-- Primary Header & Navigation Bar -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="nav-brand" aria-label="Shayam Satish Shetty Home">
+        <span class="brand-monogram">SS</span>
+        <span class="brand-name">Shayam S. Shetty</span>
+      </a>
+
+      <!-- Desktop Nav Menu -->
+      <nav class="nav-menu" id="nav-menu" aria-label="Main Navigation">
+        <ul class="nav-list">
+          <li><a href="#about" class="nav-link">About</a></li>
+          <li><a href="#education" class="nav-link">Education</a></li>
+          <li><a href="#skills" class="nav-link">Skills</a></li>
+          <li><a href="#projects" class="nav-link">Projects</a></li>
+          <li><a href="#experience" class="nav-link">Experience</a></li>
+          <li><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <!-- Action Utilities -->
+      <div class="nav-actions">
+        <!-- Print / PDF Button -->
+        <button id="print-btn" class="btn btn-ghost btn-nav-print" title="Print or Save as PDF" aria-label="Print or Save Resume as PDF">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          <span class="btn-text">Print / PDF</span>
+        </button>
+
+        <!-- Dark/Light Theme Toggle -->
+        <button id="theme-toggle" class="btn btn-ghost btn-icon" title="Toggle Dark/Light Mode" aria-label="Toggle Dark or Light Theme">
+          <!-- Sun Icon (for Dark mode to switch to Light) -->
+          <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <!-- Moon Icon (for Light mode to switch to Dark) -->
+          <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobile-toggle" class="btn btn-ghost btn-icon mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">
+          <svg class="icon icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+          <svg class="icon icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- HERO SECTION -->
+    <section id="hero" class="section hero-section">
+      <div class="container">
+        <div class="hero-header">
+          <div class="status-badge">
+            <span class="status-dot"></span>
+            <span>4th-Year AI & ML Student · Open to Opportunities</span>
+          </div>
+          
+          <h1 class="hero-name">Shayam Satish Shetty</h1>
+          <p class="hero-title">AI & ML Engineering Student <span class="divider-slash">|</span> Full-Stack & AI-Assisted Builder</p>
+          
+          <p class="hero-summary">
+            Undergraduate in Artificial Intelligence & Machine Learning at <strong>SMVITM (VTU)</strong>. 
+            Passionate about bridging full-stack systems, validated REST architectures, and AI-assisted workflows to design fast, reliable software solutions.
+          </p>
+
+          <!-- Contact Quick-Bar -->
+          <div class="hero-meta">
+            <div class="meta-item">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>Karnataka, India</span>
+            </div>
+
+            <div class="meta-item">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+              </svg>
+              <span>SMVITM, VTU</span>
+            </div>
+
+            <div class="meta-item">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>4th Year / Senior (2025/2026)</span>
+            </div>
+          </div>
+
+          <!-- Hero CTAs -->
+          <div class="hero-cta-group">
+            <!-- Copy Email Button -->
+            <button class="btn btn-primary copy-email-btn" data-email="shayamshett290@gmail.com" aria-label="Copy Email Address">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy Email</span>
+            </button>
+
+            <!-- Jump to Projects -->
+            <a href="#projects" class="btn btn-secondary">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span>View Projects</span>
+            </a>
+
+            <!-- Quick Print / PDF -->
+            <button class="btn btn-outline quick-print-trigger" aria-label="Print or Save as PDF">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+              </svg>
+              <span>Save as PDF</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section id="about" class="section">
+      <div class="container">
+        <div class="section-title-wrap">
+          <h2 class="section-title">About Me</h2>
+          <span class="section-tag">01. Profile & Focus</span>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-card content-card">
+            <p class="about-text">
+              I am a 4th-year <strong>Artificial Intelligence & Machine Learning</strong> engineering student at 
+              <strong>SMVITM</strong> (affiliated with Visvesvaraya Technological University - VTU). 
+              My technical journey blends rigorous engineering fundamentals with pragmatic modern web development.
+            </p>
+            <p class="about-text">
+              I focus on building resilient software: from same-origin Express and SQLite backends with strict API validation, 
+              to intent-driven focus applications. As an <strong>AI-assisted builder</strong>, 
+              I actively integrate modern AI tools, prompt engineering, and bounded AI contracts to accelerate product delivery 
+              while keeping codebases clean, deterministic, and maintainable.
+            </p>
+          </div>
+
+          <div class="highlights-grid">
+            <div class="stat-card">
+              <div class="stat-number">4th</div>
+              <div class="stat-label">Year AI & ML Student</div>
+              <div class="stat-sub">SMVITM · VTU</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-number">AI/ML</div>
+              <div class="stat-label">Hands-On Builds</div>
+              <div class="stat-sub">Full-Stack & AI Systems</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-number">2</div>
+              <div class="stat-label">Core Featured Projects</div>
+              <div class="stat-sub">Snake Coach & DOSHE</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-number">100%</div>
+              <div class="stat-label">Builder Mindset</div>
+              <div class="stat-sub">Pragmatic, Fast & Focused</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EDUCATION SECTION -->
+    <section id="education" class="section">
+      <div class="container">
+        <div class="section-title-wrap">
+          <h2 class="section-title">Education</h2>
+          <span class="section-tag">02. Academic Background</span>
+        </div>
+
+        <div class="education-card content-card">
+          <div class="education-header">
+            <div>
+              <h3 class="degree-title">Bachelor of Engineering (B.E.) in Artificial Intelligence & Machine Learning</h3>
+              <p class="institution-name">
+                <svg class="icon inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                  <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                </svg>
+                SMVITM (Visvesvaraya Technological University - VTU)
+              </p>
+            </div>
+            <div class="period-badge">
+              <span class="period-text">Currently in 4th Year</span>
+            </div>
+          </div>
+
+          <p class="education-desc">
+            Pursuing hands-on training in machine learning concepts, data structures, algorithm design, database engineering, 
+            and modern full-stack systems engineering under the Visvesvaraya Technological University curriculum.
+          </p>
+
+          <div class="coursework-block">
+            <h4 class="subhead-title">Core Disciplines & Topics:</h4>
+            <div class="tag-cloud">
+              <span class="tag">Artificial Intelligence</span>
+              <span class="tag">Machine Learning</span>
+              <span class="tag">Data Structures & Algorithms</span>
+              <span class="tag">Database Management Systems</span>
+              <span class="tag">Full-Stack Web Development</span>
+              <span class="tag">Software Engineering & Architecture</span>
+              <span class="tag">Object-Oriented Programming</span>
+              <span class="tag">System Design & Problem Solving</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS SECTION -->
+    <section id="skills" class="section">
+      <div class="container">
+        <div class="section-title-wrap">
+          <h2 class="section-title">Technical Skills</h2>
+          <span class="section-tag">03. Tooling & Technologies</span>
+        </div>
+
+        <div class="skills-grid">
+          <!-- Category 1: Languages -->
+          <div class="skill-category-card">
+            <div class="skill-cat-header">
+              <div class="skill-icon-wrap">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+              </div>
+              <h3 class="skill-cat-title">Programming Languages</h3>
+            </div>
+            <ul class="skill-pill-list">
+              <li class="skill-pill"><span class="pill-dot"></span> Python</li>
+              <li class="skill-pill"><span class="pill-dot"></span> C / C++</li>
+              <li class="skill-pill"><span class="pill-dot"></span> JavaScript (ES6+)</li>
+            </ul>
+          </div>
+
+          <!-- Category 2: Web & Backend -->
+          <div class="skill-category-card">
+            <div class="skill-cat-header">
+              <div class="skill-icon-wrap">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                  <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                  <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                  <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                </svg>
+              </div>
+              <h3 class="skill-cat-title">Web & Backend</h3>
+            </div>
+            <ul class="skill-pill-list">
+              <li class="skill-pill"><span class="pill-dot"></span> Node.js</li>
+              <li class="skill-pill"><span class="pill-dot"></span> Express.js</li>
+              <li class="skill-pill"><span class="pill-dot"></span> HTML5</li>
+              <li class="skill-pill"><span class="pill-dot"></span> CSS3</li>
+              <li class="skill-pill"><span class="pill-dot"></span> RESTful APIs</li>
+            </ul>
+          </div>
+
+          <!-- Category 3: Database & Infrastructure -->
+          <div class="skill-category-card">
+            <div class="skill-cat-header">
+              <div class="skill-icon-wrap">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                  <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                </svg>
+              </div>
+              <h3 class="skill-cat-title">Databases & DevOps</h3>
+            </div>
+            <ul class="skill-pill-list">
+              <li class="skill-pill"><span class="pill-dot"></span> SQLite</li>
+              <li class="skill-pill"><span class="pill-dot"></span> Git & GitHub</li>
+              <li class="skill-pill"><span class="pill-dot"></span> Docker</li>
+            </ul>
+          </div>
+
+          <!-- Category 4: AI & Development Workflow -->
+          <div class="skill-category-card">
+            <div class="skill-cat-header">
+              <div class="skill-icon-wrap">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+              </div>
+              <h3 class="skill-cat-title">Workflows & Specializations</h3>
+            </div>
+            <ul class="skill-pill-list">
+              <li class="skill-pill"><span class="pill-dot"></span> AI-Assisted Development</li>
+              <li class="skill-pill"><span class="pill-dot"></span> Prompt Engineering</li>
+              <li class="skill-pill"><span class="pill-dot"></span> Full-Stack Architecture</li>
+              <li class="skill-pill"><span class="pill-dot"></span> Contract-Based API Design</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED PROJECTS SECTION -->
+    <section id="projects" class="section">
+      <div class="container">
+        <div class="section-title-wrap">
+          <h2 class="section-title">Featured Projects</h2>
+          <span class="section-tag">04. Real-World Engineering</span>
+        </div>
+
+        <div class="projects-grid">
+          <!-- Project 1: Full-Stack Snake & Bounded AI Coach -->
+          <article class="project-card">
+            <div class="project-card-top">
+              <div class="project-badge">Full-Stack & AI Systems</div>
+              <h3 class="project-title">Full-Stack Snake & Bounded AI Coach</h3>
+              <p class="project-desc">
+                Engineered an end-to-end game system featuring a same-origin Express server, validated REST API, 
+                and persistent SQLite database. Features a versioned AI round-coach contract that delivers game analytics 
+                and feedback with a deterministic local fallback to safeguard uptime and reliability.
+              </p>
+            </div>
+
+            <div class="project-card-middle">
+              <div class="highlights-list">
+                <div class="hl-item">
+                  <span class="hl-bullet">▹</span>
+                  <span><strong>Architecture:</strong> Same-origin Express server with validated RESTful endpoints.</span>
+                </div>
+                <div class="hl-item">
+                  <span class="hl-bullet">▹</span>
+                  <span><strong>Storage:</strong> Structured SQLite persistence for match state and scores.</span>
+                </div>
+                <div class="hl-item">
+                  <span class="hl-bullet">▹</span>
+                  <span><strong>Resilience:</strong> Versioned AI coach contract with guaranteed local fallback.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="project-card-bottom">
+              <div class="project-tags">
+                <span class="tech-tag">Express.js</span>
+                <span class="tech-tag">Node.js</span>
+                <span class="tech-tag">SQLite</span>
+                <span class="tech-tag">REST API</span>
+                <span class="tech-tag">AI Contract</span>
+              </div>
+              <div class="project-links">
+                <a href="https://snake-3d-app.onrender.com" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-primary">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                  <span>Live Demo</span>
+                </a>
+                <a href="https://github.com/shayam1408/Snake-3d-app" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-secondary">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                  </svg>
+                  <span>GitHub Repo</span>
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Project 2: DOSHE (Task & Focus Concept) -->
+          <article class="project-card">
+            <div class="project-card-top">
+              <div class="project-badge">Product Concept & UX</div>
+              <h3 class="project-title">DOSHE (Task & Focus Concept)</h3>
+              <p class="project-desc">
+                An intent-based productivity and anti-doomscrolling application concept designed to curb algorithmic 
+                distraction. Engineered around intentional task initiation, digital mindfulness, and structured focus sessions.
+              </p>
+            </div>
+
+            <div class="project-card-middle">
+              <div class="highlights-list">
+                <div class="hl-item">
+                  <span class="hl-bullet">▹</span>
+                  <span><strong>Core Intent:</strong> Friction-based intervention to break compulsive doomscrolling cycles.</span>
+                </div>
+                <div class="hl-item">
+                  <span class="hl-bullet">▹</span>
+                  <span><strong>Task Flow:</strong> Micro-commitments and purposeful session-based task execution.</span>
+                </div>
+                <div class="hl-item">
+                  <span class="hl-bullet">▹</span>
+                  <span><strong>Focus Architecture:</strong> Minimalist UX design keeping cognitive overload at zero.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="project-card-bottom">
+              <div class="project-tags">
+                <span class="tech-tag">Product Design</span>
+                <span class="tech-tag">Focus Engineering</span>
+                <span class="tech-tag">UX Flow</span>
+                <span class="tech-tag">Behavioral Tech</span>
+              </div>
+              <div class="project-links">
+                <a href="https://github.com/shayam1408" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-secondary">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                  <span>Concept & Architecture</span>
+                </a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE & ACTIVITIES SECTION -->
+    <section id="experience" class="section">
+      <div class="container">
+        <div class="section-title-wrap">
+          <h2 class="section-title">Experience & Activities</h2>
+          <span class="section-tag">05. Professional Growth</span>
+        </div>
+
+        <div class="timeline">
+          <!-- Item 1: Infotact Solutions -->
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content content-card">
+              <div class="timeline-header">
+                <div>
+                  <h3 class="role-title">Web & Software Development Intern</h3>
+                  <div class="company-name">Infotact Solutions</div>
+                </div>
+                <span class="timeline-badge">Internship</span>
+              </div>
+              <p class="timeline-text">
+                Contributed to software and web development initiatives, collaborating on frontend and backend 
+                workflows, implementing clean modular code, and participating in team code reviews.
+              </p>
+              <div class="timeline-tags">
+                <span class="tag">Web Development</span>
+                <span class="tag">Software Engineering</span>
+                <span class="tag">Problem Solving</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 2: Workshops & Hackathon -->
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content content-card">
+              <div class="timeline-header">
+                <div>
+                  <h3 class="role-title">Hackathons & Technical Workshops</h3>
+                  <div class="company-name">SMVITM Campus & UniCourt</div>
+                </div>
+                <span class="timeline-badge">Participation</span>
+              </div>
+              <p class="timeline-text">
+                Actively participated in competitive tech events and hands-on skill-building sessions:
+              </p>
+              <ul class="activities-list">
+                <li>
+                  <strong>UniCourt Web Development Workshops:</strong> Deep-dived into industry-standard web engineering practices, 
+                  HTTP communication, and modern frontend/backend integration.
+                </li>
+                <li>
+                  <strong>DevHost Hackathon at SMVITM:</strong> Competed in collaborative team hackathons, conceptualizing and rapidly prototyping 
+                  practical solutions under strict deadlines.
+                </li>
+              </ul>
+              <div class="timeline-tags">
+                <span class="tag">DevHost Hackathon</span>
+                <span class="tag">UniCourt Workshop</span>
+                <span class="tag">Rapid Prototyping</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section id="contact" class="section">
+      <div class="container">
+        <div class="section-title-wrap">
+          <h2 class="section-title">Get in Touch</h2>
+          <span class="section-tag">06. Connect & Collaborate</span>
+        </div>
+
+        <div class="contact-box content-card">
+          <div class="contact-inner">
+            <h3 class="contact-heading">Let's build something remarkable together.</h3>
+            <p class="contact-subtext">
+              I am open to full-time roles, engineering internships, and collaborative software projects. 
+              Feel free to reach out directly or check out my profiles below.
+            </p>
+
+            <!-- One-Click Quick Action -->
+            <div class="copy-box">
+              <div class="copy-box-info">
+                <span class="copy-box-label">Primary Email:</span>
+                <code id="email-display" class="copy-box-value">shayamshett290@gmail.com</code>
+              </div>
+              <button class="btn btn-primary copy-email-btn" data-email="shayamshett290@gmail.com" aria-label="Copy Email Address to Clipboard">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span>Copy Email</span>
+              </button>
+            </div>
+
+            <!-- Profile Links Grid -->
+            <div class="social-links-grid">
+              <!-- LinkedIn Link -->
+              <a href="https://www.linkedin.com/in/shayam-shetty-13208728b/" target="_blank" rel="noopener noreferrer" class="social-card" id="social-linkedin">
+                <div class="social-icon-box">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                    <rect x="2" y="9" width="4" height="12"></rect>
+                    <circle cx="4" cy="4" r="2"></circle>
+                  </svg>
+                </div>
+                <div class="social-meta">
+                  <span class="social-name">LinkedIn</span>
+                  <span class="social-url">linkedin.com/in/shayam-shetty-13208728b/</span>
+                </div>
+                <span class="social-arrow">↗</span>
+              </a>
+
+              <!-- GitHub Link -->
+              <a href="https://github.com/shayam1408" target="_blank" rel="noopener noreferrer" class="social-card" id="social-github">
+                <div class="social-icon-box">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                  </svg>
+                </div>
+                <div class="social-meta">
+                  <span class="social-name">GitHub</span>
+                  <span class="social-url">github.com/shayam1408</span>
+                </div>
+                <span class="social-arrow">↗</span>
+              </a>
+
+              <!-- Mail Directly Link -->
+              <a href="mailto:shayamshett290@gmail.com" class="social-card" id="social-email">
+                <div class="social-icon-box">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                </div>
+                <div class="social-meta">
+                  <span class="social-name">Direct Email</span>
+                  <span class="social-url">shayamshett290@gmail.com</span>
+                </div>
+                <span class="social-arrow">↗</span>
+              </a>
+            </div>
+
+            <!-- Print Prompt -->
+            <div class="print-note">
+              <span>Need a physical copy for an interview or recruitment drive?</span>
+              <button class="btn btn-sm btn-ghost quick-print-trigger">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                  <rect x="6" y="14" width="12" height="8"></rect>
+                </svg>
+                <span>Print Clean PDF</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Clean Minimalist Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p class="footer-copy">
+        © 2026 Shayam Satish Shetty · Built with semantic HTML5, CSS3 & JavaScript
+      </p>
+      <div class="footer-links">
+        <a href="#hero" class="footer-link">Back to Top ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Print-Only Resume Header (Shown strictly during print/PDF generation) -->
+  <div class="print-header-sheet">
+    <div class="print-name-block">
+      <h1>Shayam Satish Shetty</h1>
+      <p class="print-title">AI & ML Engineering Student | Full-Stack & AI-Assisted Builder</p>
+      <p class="print-contact">SMVITM (VTU) · Karnataka, India · Email: shayamshett290@gmail.com · GitHub: github.com/shayam1408 · LinkedIn: linkedin.com/in/shayam-shetty-13208728b/</p>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
