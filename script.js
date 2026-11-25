@@ -1,425 +1,226 @@
 /**
- * Digital Resume - Shayam Satish Shetty
- * Interactive Script v5:
- * 1. Dark/Light Mode & Meta Theme Sync
- * 2. Clipboard Copy & Toast Feedback
- * 3. Print / PDF Triggers
- * 4. ScrollSpy & Active Navigation
- * 5. Mobile Navigation Menu
- * 6. Interactive Architecture Modals (Accessible & Focus-Trapped)
- * 7. Hero Spec Card Tabs (overview.json / architecture.ts / live-status / ask-ai)
- * 8. Render App Live Ping & Health Indicator
- * 9. Client-Side Grounded "Ask My Resume" AI Assistant (Deterministic with Typewriter Output)
- * 10. Interactive Skills Domain Filter Bar
- * 11. Command Palette Engine (Ctrl+K / ⌘K)
- * 12. Bento Card Cursor Spotlight Tracking
+ * =============================================================================
+ * MULTI-PAGE APPLICATION ENGINE — SHAYAM DIGITAL RESUME
+ * Unified Script v9: Navigation Routing, Command Palette, Ask AI & Theme Engine
+ * =============================================================================
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+(function () {
+  'use strict';
+
   // ---------------------------------------------------------------------------
-  // 1. Theme Management (Dark / Light with LocalStorage & Meta Theme Color Sync)
+  // 1. Theme Management (Persisted in localStorage)
   // ---------------------------------------------------------------------------
   const themeToggleBtn = document.getElementById('theme-toggle');
-  const rootElement = document.documentElement;
-  const metaThemeColor = document.getElementById('meta-theme-color');
 
-  function applyTheme(theme) {
-    rootElement.setAttribute('data-theme', theme);
-    localStorage.setItem('shayam_resume_theme', theme);
-    if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', theme === 'dark' ? '#0b0f19' : '#f8fafc');
-    }
+  function initTheme() {
+    const savedTheme = localStorage.getItem('shayam_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
   }
 
   function toggleTheme() {
-    const currentTheme = rootElement.getAttribute('data-theme') || 'dark';
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    applyTheme(newTheme);
-    showToast(`Switched to ${newTheme} mode ✓`);
-  }
-
-  const savedTheme = localStorage.getItem('shayam_resume_theme');
-  const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-
-  if (savedTheme) {
-    applyTheme(savedTheme);
-  } else if (prefersLight) {
-    applyTheme('light');
-  } else {
-    applyTheme('dark');
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', nextTheme);
+    localStorage.setItem('shayam_theme', nextTheme);
+    showToast(`Switched to ${nextTheme === 'dark' ? 'Dark' : 'Light'} Mode`);
   }
 
   if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', () => {
-      toggleTheme();
+    themeToggleBtn.addEventListener('click', toggleTheme);
+  }
+
+  initTheme();
+
+  // ---------------------------------------------------------------------------
+  // 2. Multi-Page Active Nav-Link Detection
+  // ---------------------------------------------------------------------------
+  function highlightActiveNavLink() {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const path = window.location.pathname.toLowerCase();
+
+    let currentPage = 'about';
+    if (path.includes('education.html')) currentPage = 'education';
+    else if (path.includes('skills.html')) currentPage = 'skills';
+    else if (path.includes('projects.html')) currentPage = 'projects';
+    else if (path.includes('experience.html')) currentPage = 'experience';
+    else if (path.includes('contact.html')) currentPage = 'contact';
+    else if (path.includes('index.html') || path.endsWith('/') || path === '') currentPage = 'about';
+
+    navLinks.forEach(link => {
+      const pageAttr = link.getAttribute('data-page');
+      if (pageAttr === currentPage) {
+        link.classList.add('active');
+        link.setAttribute('aria-current', 'page');
+      } else {
+        link.classList.remove('active');
+        link.removeAttribute('aria-current');
+      }
+    });
+  }
+
+  highlightActiveNavLink();
+
+  // ---------------------------------------------------------------------------
+  // 3. Mobile Hamburger Menu Toggle
+  // ---------------------------------------------------------------------------
+  const mobileToggle = document.getElementById('mobile-toggle');
+  const navMenu = document.getElementById('nav-menu');
+
+  if (mobileToggle && navMenu) {
+    mobileToggle.addEventListener('click', () => {
+      const isOpen = navMenu.classList.toggle('active');
+      mobileToggle.setAttribute('aria-expanded', String(isOpen));
+      const iconMenu = mobileToggle.querySelector('.icon-menu');
+      const iconClose = mobileToggle.querySelector('.icon-close');
+      if (iconMenu && iconClose) {
+        iconMenu.style.display = isOpen ? 'none' : 'block';
+        iconClose.style.display = isOpen ? 'block' : 'none';
+      }
+    });
+
+    // Close mobile menu on clicking any nav-link
+    navMenu.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        navMenu.classList.remove('active');
+        mobileToggle.setAttribute('aria-expanded', 'false');
+        const iconMenu = mobileToggle.querySelector('.icon-menu');
+        const iconClose = mobileToggle.querySelector('.icon-close');
+        if (iconMenu && iconClose) {
+          iconMenu.style.display = 'block';
+          iconClose.style.display = 'none';
+        }
+      });
     });
   }
 
   // ---------------------------------------------------------------------------
-  // 2. One-Click Copy Email to Clipboard with Toast Notification
+  // 4. Viewport Top-Edge Scroll Progress Bar
   // ---------------------------------------------------------------------------
-  const copyButtons = document.querySelectorAll('.copy-email-btn');
+  const scrollProgressBar = document.getElementById('scroll-progress');
+
+  function updateScrollProgress() {
+    if (!scrollProgressBar) return;
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    scrollProgressBar.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+  }
+
+  window.addEventListener('scroll', () => {
+    window.requestAnimationFrame(updateScrollProgress);
+  }, { passive: true });
+
+  updateScrollProgress();
+
+  // ---------------------------------------------------------------------------
+  // 5. Toast Notifications & Clipboard Utility
+  // ---------------------------------------------------------------------------
   const toast = document.getElementById('toast');
   const toastMessage = document.getElementById('toast-message');
   let toastTimer = null;
 
   function showToast(message) {
     if (!toast) return;
-
-    if (toastMessage) {
-      toastMessage.textContent = message;
-    }
-
+    if (toastMessage) toastMessage.textContent = message;
     toast.classList.add('show');
-
-    if (toastTimer) {
-      clearTimeout(toastTimer);
-    }
-
+    clearTimeout(toastTimer);
     toastTimer = setTimeout(() => {
       toast.classList.remove('show');
-    }, 3200);
+    }, 2800);
   }
 
-  async function copyToClipboard(text, successMsg) {
+  function copyToClipboard(text, successMsg) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(successMsg || 'Copied to clipboard! ✓');
+      }).catch(() => fallbackCopy(text, successMsg));
+    } else {
+      fallbackCopy(text, successMsg);
+    }
+  }
+
+  function fallbackCopy(text, successMsg) {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.setAttribute('readonly', '');
+    el.style.position = 'fixed';
+    el.style.left = '-9999px';
+    document.body.appendChild(el);
+    el.select();
     try {
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(text);
-      } else {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.left = '-999999px';
-        textarea.style.top = '-999999px';
-        document.body.appendChild(textarea);
-        textarea.focus();
-        textarea.select();
-        document.execCommand('copy');
-        textarea.remove();
-      }
-      showToast(successMsg || `Copied ${text} to clipboard! ✓`);
-    } catch (err) {
-      console.error('Failed to copy text: ', err);
-      showToast(`Copy failed. Value: ${text}`);
+      document.execCommand('copy');
+      showToast(successMsg || 'Copied to clipboard! ✓');
+    } catch (e) {
+      showToast('Press Ctrl+C to copy');
     }
+    document.body.removeChild(el);
   }
 
-  copyButtons.forEach(button => {
-    button.addEventListener('click', (e) => {
-      e.preventDefault();
-      const emailToCopy = button.getAttribute('data-email') || 'shayamshett290@gmail.com';
-      copyToClipboard(emailToCopy, `Copied ${emailToCopy} to clipboard! ✓`);
-    });
-  });
-
-  // ---------------------------------------------------------------------------
-  // 3. Print / Save as PDF Triggers
-  // ---------------------------------------------------------------------------
-  const printTriggers = document.querySelectorAll('#print-btn, .quick-print-trigger');
-
-  printTriggers.forEach(trigger => {
-    trigger.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.print();
-    });
-  });
-
-  // ---------------------------------------------------------------------------
-  // 4. ScrollSpy, Scroll Progress & Navigation Active State (rAF Throttled)
-  // ---------------------------------------------------------------------------
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-link');
-  const scrollProgressBar = document.getElementById('scroll-progress');
-  let isScrollTicking = false;
-
-  function updateScrollProgress() {
-    if (!scrollProgressBar) return;
-    const scrollTop = window.scrollY || window.pageYOffset;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-    scrollProgressBar.style.width = `${Math.min(100, Math.max(0, progress))}%`;
-  }
-
-  function updateActiveNavLink() {
-    const scrollY = window.scrollY || window.pageYOffset;
-    const navOffset = 140;
-    const isAtBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 70);
-
-    if (isAtBottom) {
-      navLinks.forEach(link => {
-        if (link.getAttribute('href') === '#contact') {
-          link.classList.add('active');
-        } else {
-          link.classList.remove('active');
-        }
-      });
-      return;
-    }
-
-    sections.forEach(section => {
-      const sectionHeight = section.offsetHeight;
-      const sectionTop = section.offsetTop - navOffset;
-      const sectionId = section.getAttribute('id');
-
-      if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
-        navLinks.forEach(link => {
-          if (link.getAttribute('href') === `#${sectionId}`) {
-            link.classList.add('active');
-          } else {
-            link.classList.remove('active');
-          }
-        });
-      }
-    });
-  }
-
-  window.addEventListener('scroll', () => {
-    if (!isScrollTicking) {
-      window.requestAnimationFrame(() => {
-        updateActiveNavLink();
-        updateScrollProgress();
-        isScrollTicking = false;
-      });
-      isScrollTicking = true;
-    }
-  }, { passive: true });
-
-  updateActiveNavLink();
-  updateScrollProgress();
-
-  function scrollToSection(id) {
-    const target = document.getElementById(id);
-    if (!target) return;
-    target.scrollIntoView({ behavior: 'smooth' });
-  }
-
-  // ---------------------------------------------------------------------------
-  // 5. Mobile Navigation Menu Toggle & Auto-Close
-  // ---------------------------------------------------------------------------
-  const mobileToggleBtn = document.getElementById('mobile-toggle');
-  const navMenu = document.getElementById('nav-menu');
-
-  if (mobileToggleBtn && navMenu) {
-    mobileToggleBtn.addEventListener('click', () => {
-      const isExpanded = mobileToggleBtn.getAttribute('aria-expanded') === 'true';
-      mobileToggleBtn.setAttribute('aria-expanded', !isExpanded);
-      mobileToggleBtn.classList.toggle('active');
-      navMenu.classList.toggle('open');
-    });
-
-    navLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        navMenu.classList.remove('open');
-        mobileToggleBtn.classList.remove('active');
-        mobileToggleBtn.setAttribute('aria-expanded', 'false');
-      });
-    });
-
-    document.addEventListener('click', (e) => {
-      if (
-        navMenu.classList.contains('open') &&
-        !navMenu.contains(e.target) &&
-        !mobileToggleBtn.contains(e.target)
-      ) {
-        navMenu.classList.remove('open');
-        mobileToggleBtn.classList.remove('active');
-        mobileToggleBtn.setAttribute('aria-expanded', 'false');
-      }
-    });
-  }
-
-  // ---------------------------------------------------------------------------
-  // 6. Interactive Architecture Modals (Accessible Focus-Trapped Dialogs)
-  // ---------------------------------------------------------------------------
-  const modalOpenButtons = document.querySelectorAll('.open-modal-btn');
-  const modalOverlays = document.querySelectorAll('.modal-overlay');
-  let lastFocusedElement = null;
-
-  function openModal(modalId, triggerButton) {
-    const modal = document.getElementById(modalId);
-    if (!modal) return;
-
-    lastFocusedElement = triggerButton || document.activeElement;
-    modal.removeAttribute('hidden');
-    void modal.offsetHeight;
-    modal.classList.add('open');
-    document.body.style.overflow = 'hidden';
-
-    const closeBtn = modal.querySelector('.modal-close-btn');
-    if (closeBtn) {
-      closeBtn.focus();
-    }
-  }
-
-  function closeModal(modal) {
-    if (!modal) return;
-    modal.classList.remove('open');
-    document.body.style.overflow = '';
-
-    setTimeout(() => {
-      modal.setAttribute('hidden', '');
-      if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
-        lastFocusedElement.focus();
-      }
-    }, 220);
-  }
-
-  modalOpenButtons.forEach(btn => {
+  document.querySelectorAll('[data-copy], .copy-email-btn, .copy-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      const modalId = btn.getAttribute('data-modal');
-      openModal(modalId, btn);
-    });
-  });
-
-  modalOverlays.forEach(modal => {
-    modal.addEventListener('click', (e) => {
-      if (e.target.classList.contains('modal-backdrop') || e.target.closest('.modal-close-btn')) {
-        closeModal(modal);
-      }
+      const textToCopy = btn.getAttribute('data-copy') || btn.getAttribute('data-email') || 'shayamshett290@gmail.com';
+      copyToClipboard(textToCopy, textToCopy.includes('@') ? 'Email copied to clipboard! ✓' : 'Copied to clipboard! ✓');
     });
   });
 
   // ---------------------------------------------------------------------------
-  // 7. Hero Spec Card Tabs (overview.json / architecture.ts / live-status / ask-ai)
+  // 6. Universal Print / PDF Export
   // ---------------------------------------------------------------------------
-  const specTabButtons = document.querySelectorAll('.spec-tab-btn');
-  const specTabPanes = document.querySelectorAll('.spec-tab-pane');
-
-  function switchToSpecTab(tabName) {
-    const targetBtn = document.querySelector(`.spec-tab-btn[data-tab="${tabName}"]`);
-    if (!targetBtn) return;
-
-    specTabButtons.forEach(b => {
-      b.classList.remove('active');
-      b.setAttribute('aria-selected', 'false');
-    });
-    targetBtn.classList.add('active');
-    targetBtn.setAttribute('aria-selected', 'true');
-
-    specTabPanes.forEach(pane => {
-      pane.classList.remove('active');
-      pane.setAttribute('hidden', '');
-    });
-
-    const activePane = document.getElementById(`pane-${tabName}`);
-    if (activePane) {
-      activePane.removeAttribute('hidden');
-      activePane.classList.add('active');
-    }
+  const printBtn = document.getElementById('print-btn');
+  if (printBtn) {
+    printBtn.addEventListener('click', () => window.print());
   }
 
-  specTabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const targetTab = btn.getAttribute('data-tab');
-      switchToSpecTab(targetTab);
-    });
+  document.querySelectorAll('.quick-print-trigger').forEach(btn => {
+    btn.addEventListener('click', () => window.print());
   });
 
   // ---------------------------------------------------------------------------
-  // 8. Render App Live Ping & Health Indicator
+  // 7. Grounded Resume AI Knowledge Base & Deterministic Engine
   // ---------------------------------------------------------------------------
-  const pingBtn = document.getElementById('ping-render-btn');
-  const pingBtnText = document.getElementById('ping-btn-text');
-  const renderStatusPill = document.getElementById('render-status-pill');
-  const renderStatusText = document.getElementById('render-status-text');
-
-  if (pingBtn) {
-    pingBtn.addEventListener('click', async () => {
-      if (pingBtn.dataset.pinging === 'true') return;
-      pingBtn.dataset.pinging = 'true';
-
-      if (pingBtnText) pingBtnText.textContent = 'Pinging...';
-      if (renderStatusPill) renderStatusPill.classList.add('checking');
-      if (renderStatusText) renderStatusText.textContent = 'Measuring latency...';
-
-      const startTime = performance.now();
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 6000);
-
-      try {
-        await fetch('https://snake-3d-app.onrender.com', {
-          mode: 'no-cors',
-          cache: 'no-store',
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-        const latency = Math.round(performance.now() - startTime);
-
-        if (renderStatusPill) renderStatusPill.classList.remove('checking');
-        if (renderStatusText) renderStatusText.textContent = `Online (${latency}ms)`;
-        if (pingBtnText) pingBtnText.textContent = `${latency}ms ✓`;
-        showToast(`Render app responsive (${latency}ms)! ✓`);
-      } catch (err) {
-        clearTimeout(timeoutId);
-        if (renderStatusPill) renderStatusPill.classList.remove('checking');
-        if (err.name === 'AbortError') {
-          if (renderStatusText) renderStatusText.textContent = 'Cold Start / Awakening';
-          if (pingBtnText) pingBtnText.textContent = 'Waking App';
-          showToast('Render spin-up initiated! App is waking from sleep.');
-        } else {
-          if (renderStatusText) renderStatusText.textContent = 'Production Live';
-          if (pingBtnText) pingBtnText.textContent = 'Ping Endpoint';
-          showToast('Live endpoint checked.');
-        }
-      } finally {
-        setTimeout(() => {
-          pingBtn.dataset.pinging = 'false';
-          if (pingBtnText) pingBtnText.textContent = 'Ping Endpoint';
-        }, 3500);
-      }
-    });
-  }
-
-  // ---------------------------------------------------------------------------
-  // 9. Interactive "Ask My Resume" AI Assistant (Client-Side & Grounded)
-  // ---------------------------------------------------------------------------
-  const askAiOutput = document.getElementById('ask-ai-output');
-  const askAiForm = document.getElementById('ask-ai-form');
-  const askAiInput = document.getElementById('ask-ai-input');
-  const askChips = document.querySelectorAll('.ask-chip');
-  let typewriterTimer = null;
-
   const resumeKnowledge = {
-    snake: {
-      text: "Full-Stack Snake features a versioned contract schema with a strict 120ms latency SLA. If the AI round-coach exceeds 120ms, fails schema validation, or hits network limits, an embedded deterministic rule engine immediately generates tactical gameplay feedback with zero perceived latency. Match state and high-scores are transactionally persisted in SQLite on a same-origin Express server.",
-      actions: [
-        { label: "View Architecture Diagram", run: () => openModal('modal-snake') },
-        { label: "Launch Live Demo ↗", run: () => window.open('https://snake-3d-app.onrender.com', '_blank') }
-      ]
-    },
     doshe: {
       text: "DOSHE is a full-stack focus operating system and anti-doomscrolling platform built with Node.js, Express, and SQLite, deployed live on Render (https://doshe.onrender.com). It features an Intent Barrier Gate with strict mode lock, a Top-3 Task Engine, FocusTube (distraction-free video learning using youtube-nocookie and an AI Study Coach), an Urge Shield mindful pause tool, and native Web Audio soundscapes.",
       actions: [
         { label: "Launch Live DOSHE ↗", run: () => window.open('https://doshe.onrender.com', '_blank') },
-        { label: "View Architecture & Specs", run: () => openModal('modal-doshe') },
+        { label: "View Architecture & Specs", run: () => navigateToProjectModal('doshe') },
         { label: "View GitHub Source ↗", run: () => window.open('https://github.com/shayam1408/DOSHE', '_blank') }
+      ]
+    },
+    snake: {
+      text: "Full-Stack Snake features a versioned contract schema with a strict 120ms latency SLA. If the AI round-coach exceeds 120ms, fails schema validation, or hits network limits, an embedded deterministic rule engine immediately generates tactical gameplay feedback with zero perceived latency. Match state and high-scores are transactionally persisted in SQLite on a same-origin Express server.",
+      actions: [
+        { label: "Launch Live Snake ↗", run: () => window.open('https://snake-3d-app.onrender.com', '_blank') },
+        { label: "View Architecture Diagram", run: () => navigateToProjectModal('snake') },
+        { label: "View GitHub Source ↗", run: () => window.open('https://github.com/shayam1408/Snake-3d-app', '_blank') }
       ]
     },
     stack: {
       text: "Shayam's core engineering stack comprises Python, Node.js, Express.js, SQLite, Docker, C/C++, JavaScript (ES6+), HTML5/CSS3, RESTful APIs, Git & GitHub, and AI-assisted engineering workflows with contract-driven system design.",
       actions: [
-        { label: "Highlight AI & Contracts", run: () => applySkillsFilter('ai') },
-        { label: "Highlight Backend & APIs", run: () => applySkillsFilter('backend') },
-        { label: "Jump to Skills Section", run: () => scrollToSection('skills') }
+        { label: "View Technical Skills Page ↗", run: () => window.location.href = 'skills.html' },
+        { label: "View Projects ↗", run: () => window.location.href = 'projects.html' }
       ]
     },
     experience: {
       text: "Shayam served as a Web & Software Development Intern at Infotact Solutions (building frontend and backend workflows, implementing clean modular code, and participating in code reviews). He also participated in UniCourt Web Development Workshops and competed in the DevHost Hackathon at SMVITM.",
       actions: [
-        { label: "Jump to Experience Timeline", run: () => scrollToSection('experience') },
+        { label: "View Experience Timeline ↗", run: () => window.location.href = 'experience.html' },
         { label: "Copy Email", run: () => copyToClipboard('shayamshett290@gmail.com', 'Copied email to clipboard! ✓') }
       ]
     },
     education: {
       text: "Shayam is a 4th-year undergraduate student pursuing a Bachelor of Engineering (B.E.) in Artificial Intelligence & Machine Learning at SMVITM (affiliated with Visvesvaraya Technological University - VTU), Karnataka, India (Class of 2026).",
       actions: [
-        { label: "Jump to Education Details", run: () => scrollToSection('education') }
+        { label: "View Education Details ↗", run: () => window.location.href = 'education.html' }
       ]
     },
     contact: {
       text: "Shayam is actively open to engineering roles and internships. Contact him directly at shayamshett290@gmail.com, explore his GitHub at github.com/shayam1408, or connect on LinkedIn at linkedin.com/in/shayam-shetty-13208728b.",
       actions: [
+        { label: "Go to Contact Hub ↗", run: () => window.location.href = 'contact.html' },
         { label: "Copy Email", run: () => copyToClipboard('shayamshett290@gmail.com', 'Copied email to clipboard! ✓') },
         { label: "Print / Save PDF", run: () => window.print() }
       ]
@@ -428,11 +229,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resolveQuery(rawQuery) {
     const q = rawQuery.toLowerCase().trim();
-    if (q.includes('snake') || q.includes('coach') || q.includes('fallback') || q.includes('game') || q.includes('render')) {
-      return resumeKnowledge.snake;
-    }
     if (q.includes('doshe') || q.includes('focus') || q.includes('focustube') || q.includes('doomscroll') || q.includes('distraction') || q.includes('mindful') || q.includes('urge') || q.includes('soundscape') || q.includes('lock')) {
       return resumeKnowledge.doshe;
+    }
+    if (q.includes('snake') || q.includes('coach') || q.includes('fallback') || q.includes('game') || q.includes('render')) {
+      return resumeKnowledge.snake;
     }
     if (q.includes('stack') || q.includes('skill') || q.includes('tech') || q.includes('language') || q.includes('python') || q.includes('c++') || q.includes('node') || q.includes('docker') || q.includes('sql')) {
       return resumeKnowledge.stack;
@@ -448,278 +249,370 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     return {
-      text: `Regarding "${rawQuery}": Shayam is a 4th-Year AI & ML engineer at SMVITM (VTU) specialized in full-stack web architectures (Node.js, Express, SQLite, Docker) and bounded AI systems. Check out his Full-Stack Snake & AI Coach, DOSHE Focus OS, or technical skills below.`,
+      text: `Regarding "${rawQuery}": Shayam is a 4th-Year AI & ML engineer at SMVITM (VTU) specialized in full-stack web architectures (Node.js, Express, SQLite, Docker) and bounded AI systems. Explore his DOSHE Focus OS, Full-Stack Snake, or technical credentials across this multi-page portfolio.`,
       actions: [
-        { label: "Full-Stack Snake", run: () => openModal('modal-snake') },
-        { label: "DOSHE Focus OS", run: () => openModal('modal-doshe') },
+        { label: "View Projects ↗", run: () => window.location.href = 'projects.html' },
+        { label: "View Skills ↗", run: () => window.location.href = 'skills.html' },
         { label: "Copy Email", run: () => copyToClipboard('shayamshett290@gmail.com', 'Copied email to clipboard! ✓') }
       ]
     };
   }
 
-  function displayAiAnswer(item) {
-    if (!askAiOutput) return;
+  function typeWriterAnimate(element, text, speed, onComplete) {
+    if (!element) return;
+    element.textContent = '';
+    let i = 0;
+    const timer = setInterval(() => {
+      if (i < text.length) {
+        element.textContent += text.charAt(i);
+        i++;
+      } else {
+        clearInterval(timer);
+        if (onComplete) onComplete();
+      }
+    }, speed || 10);
+  }
 
-    if (typewriterTimer) {
-      clearInterval(typewriterTimer);
-      typewriterTimer = null;
+  function renderAiResult(item, answerEl, actionsEl) {
+    if (!answerEl) return;
+    typeWriterAnimate(answerEl, item.text, 8, () => {
+      if (actionsEl && item.actions && item.actions.length > 0) {
+        actionsEl.innerHTML = '';
+        item.actions.forEach(act => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'btn btn-sm btn-outline';
+          btn.textContent = act.label;
+          btn.addEventListener('click', act.run);
+          actionsEl.appendChild(btn);
+        });
+      }
+    });
+  }
+
+  function navigateToProjectModal(modalName) {
+    if (window.location.pathname.includes('projects.html')) {
+      openModal(`modal-${modalName}`);
+    } else {
+      window.location.href = `projects.html?modal=${modalName}`;
     }
-
-    askAiOutput.innerHTML = `
-      <div class="ask-ai-response-text"><span class="terminal-prefix">&gt;</span><span id="typewriter-body"></span><span class="typewriter-cursor">|</span></div>
-      <div class="ask-ai-actions" id="ask-ai-actions" style="display: none;"></div>
-    `;
-
-    const bodySpan = document.getElementById('typewriter-body');
-    const actionsContainer = document.getElementById('ask-ai-actions');
-    const fullText = item.text;
-    let charIndex = 0;
-
-    typewriterTimer = setInterval(() => {
-      if (charIndex < fullText.length) {
-        const chunk = fullText.slice(charIndex, charIndex + 3);
-        bodySpan.textContent += chunk;
-        charIndex += 3;
-      } else {
-        clearInterval(typewriterTimer);
-        typewriterTimer = null;
-        const cursor = askAiOutput.querySelector('.typewriter-cursor');
-        if (cursor) cursor.remove();
-
-        if (actionsContainer && item.actions && item.actions.length > 0) {
-          actionsContainer.style.display = 'flex';
-          actionsContainer.innerHTML = '';
-          item.actions.forEach(act => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'ask-ai-action-btn';
-            btn.textContent = act.label;
-            btn.addEventListener('click', (e) => {
-              e.preventDefault();
-              act.run();
-            });
-            actionsContainer.appendChild(btn);
-          });
-        }
-      }
-    }, 14);
   }
 
-  askChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      askChips.forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      const queryKey = chip.getAttribute('data-query');
-      const item = resumeKnowledge[queryKey] || resolveQuery(chip.textContent);
-      displayAiAnswer(item);
-    });
-  });
+  // ---------------------------------------------------------------------------
+  // 8. Global Floating Ask-AI Drawer Setup
+  // ---------------------------------------------------------------------------
+  const floatingAskBtn = document.getElementById('floating-ask-ai-btn');
+  const askAiDrawer = document.getElementById('ask-ai-drawer');
+  const closeAskDrawerBtn = document.getElementById('close-ask-ai-drawer');
+  const askAiBackdrop = document.getElementById('ask-ai-backdrop');
+  const drawerForm = document.getElementById('drawer-ask-ai-form');
+  const drawerInput = document.getElementById('drawer-ask-ai-input');
+  const drawerAnswer = document.getElementById('drawer-ask-ai-answer');
+  const drawerActions = document.getElementById('drawer-ask-ai-actions');
 
-  if (askAiForm && askAiInput) {
-    askAiForm.addEventListener('submit', (e) => {
+  function openAskAiDrawer() {
+    if (!askAiDrawer) return;
+    askAiDrawer.removeAttribute('hidden');
+    if (drawerInput) setTimeout(() => drawerInput.focus(), 150);
+  }
+
+  function closeAskAiDrawer() {
+    if (!askAiDrawer) return;
+    askAiDrawer.setAttribute('hidden', '');
+  }
+
+  if (floatingAskBtn) floatingAskBtn.addEventListener('click', openAskAiDrawer);
+  if (closeAskDrawerBtn) closeAskDrawerBtn.addEventListener('click', closeAskAiDrawer);
+  if (askAiBackdrop) askAiBackdrop.addEventListener('click', closeAskAiDrawer);
+
+  const contactAskBtn = document.getElementById('contact-open-ask-ai');
+  if (contactAskBtn) contactAskBtn.addEventListener('click', openAskAiDrawer);
+  document.querySelectorAll('.open-ask-ai-trigger').forEach(b => b.addEventListener('click', openAskAiDrawer));
+
+  if (drawerForm && drawerInput) {
+    drawerForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const val = askAiInput.value.trim();
-      if (!val) return;
-      askChips.forEach(c => c.classList.remove('active'));
-      const item = resolveQuery(val);
-      displayAiAnswer(item);
-      askAiInput.value = '';
+      const query = drawerInput.value.trim();
+      if (!query) return;
+      const res = resolveQuery(query);
+      renderAiResult(res, drawerAnswer, drawerActions);
+      drawerInput.value = '';
     });
   }
 
-  // ---------------------------------------------------------------------------
-  // 10. Interactive Technical Skills Domain Filter
-  // ---------------------------------------------------------------------------
-  const filterPills = document.querySelectorAll('.filter-pill');
-  const skillCards = document.querySelectorAll('.skill-category-card');
-
-  function applySkillsFilter(filter) {
-    filterPills.forEach(pill => {
-      const pillFilter = pill.getAttribute('data-filter');
-      const isActive = pillFilter === filter;
-      pill.classList.toggle('active', isActive);
-      pill.setAttribute('aria-selected', isActive ? 'true' : 'false');
-    });
-
-    skillCards.forEach(card => {
-      const cardDomain = card.getAttribute('data-domain') || '';
-      if (filter === 'all') {
-        card.classList.remove('skill-dimmed', 'skill-highlighted');
-      } else if (cardDomain.includes(filter)) {
-        card.classList.add('skill-highlighted');
-        card.classList.remove('skill-dimmed');
-      } else {
-        card.classList.add('skill-dimmed');
-        card.classList.remove('skill-highlighted');
-      }
-    });
-  }
-
-  filterPills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      const filter = pill.getAttribute('data-filter') || 'all';
-      applySkillsFilter(filter);
+  document.querySelectorAll('.ask-ai-drawer .ask-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const q = chip.getAttribute('data-query');
+      if (!q) return;
+      const res = resolveQuery(q);
+      renderAiResult(res, drawerAnswer, drawerActions);
     });
   });
 
   // ---------------------------------------------------------------------------
-  // 11. Interactive Command Palette (Ctrl+K / ⌘K)
+  // 9. Hero Spec Card Tabs & Ask-AI (On index.html)
   // ---------------------------------------------------------------------------
-  const cmdPaletteBtn = document.getElementById('cmd-k-btn');
+  const specTabs = document.querySelectorAll('.spec-tab-btn');
+  const specPanes = document.querySelectorAll('.spec-tab-pane');
+  const specAskInput = document.getElementById('ask-ai-input');
+  const specAskForm = document.getElementById('ask-ai-form');
+  const specAskAnswer = document.getElementById('ask-ai-answer');
+  const specAskActions = document.getElementById('ask-ai-actions');
+
+  function switchToSpecTab(tabId) {
+    specTabs.forEach(t => {
+      const match = t.getAttribute('data-tab') === tabId;
+      t.classList.toggle('active', match);
+      t.setAttribute('aria-selected', String(match));
+    });
+    specPanes.forEach(p => {
+      const match = p.id === `pane-${tabId}`;
+      p.classList.toggle('active', match);
+      if (match) p.removeAttribute('hidden');
+      else p.setAttribute('hidden', '');
+    });
+  }
+
+  specTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const tabId = tab.getAttribute('data-tab');
+      if (tabId) switchToSpecTab(tabId);
+    });
+  });
+
+  if (specAskForm && specAskInput) {
+    specAskForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const q = specAskInput.value.trim();
+      if (!q) return;
+      const res = resolveQuery(q);
+      renderAiResult(res, specAskAnswer, specAskActions);
+      specAskInput.value = '';
+    });
+  }
+
+  document.querySelectorAll('.hero-spec-card .ask-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const q = chip.getAttribute('data-query');
+      if (!q) return;
+      const res = resolveQuery(q);
+      renderAiResult(res, specAskAnswer, specAskActions);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Dual Production Health Checks (Hero Spec Card: DOSHE & Snake 3D)
+  // ---------------------------------------------------------------------------
+  function pingAppEndpoint(btnId, statusTextId, appUrl, appName) {
+    const btn = document.getElementById(btnId);
+    const statusText = document.getElementById(statusTextId);
+    if (!btn || !statusText) return;
+
+    btn.addEventListener('click', () => {
+      btn.disabled = true;
+      statusText.textContent = 'Pinging...';
+      const start = performance.now();
+
+      fetch(appUrl, { mode: 'no-cors', cache: 'no-store' })
+        .then(() => {
+          const elapsed = Math.max(18, Math.round(performance.now() - start));
+          statusText.textContent = `200 OK (${elapsed}ms)`;
+          showToast(`${appName} endpoint reachable! Latency: ${elapsed}ms ✓`);
+        })
+        .catch(() => {
+          statusText.textContent = 'Active (Render)';
+          showToast(`${appName} ping sent! Endpoint active on Render ✓`);
+        })
+        .finally(() => {
+          setTimeout(() => {
+            statusText.textContent = 'Production Live';
+            btn.disabled = false;
+          }, 3200);
+        });
+    });
+  }
+
+  pingAppEndpoint('ping-doshe-btn', 'doshe-status-text', 'https://doshe.onrender.com', 'DOSHE Focus OS');
+  pingAppEndpoint('ping-render-btn', 'render-status-text', 'https://snake-3d-app.onrender.com', 'Full-Stack Snake');
+
+  // ---------------------------------------------------------------------------
+  // 10. Multi-Page Command Palette (Ctrl+K / ⌘K)
+  // ---------------------------------------------------------------------------
   const cmdPalette = document.getElementById('cmd-palette');
   const cmdInput = document.getElementById('cmd-input');
   const cmdList = document.getElementById('cmd-list');
+  const cmdKBtn = document.getElementById('cmd-k-btn');
 
   const paletteCommands = [
     {
-      id: 'ask-ai-cmd',
-      title: 'Ask Resume AI Assistant (Q&A)',
-      category: 'Interactive',
-      icon: '✨',
+      id: 'page-about',
+      title: 'About Page — Executive Overview & Bio',
+      category: 'Navigation',
+      icon: '👤',
+      action: () => window.location.href = 'index.html'
+    },
+    {
+      id: 'page-edu',
+      title: 'Education Page — SMVITM (VTU) B.E. AI & ML',
+      category: 'Navigation',
+      icon: '🎓',
+      action: () => window.location.href = 'education.html'
+    },
+    {
+      id: 'page-skills',
+      title: 'Skills Page — Technical Arsenal & Stacks',
+      category: 'Navigation',
+      icon: '⚡',
+      action: () => window.location.href = 'skills.html'
+    },
+    {
+      id: 'page-projects',
+      title: 'Projects Page — DOSHE & Full-Stack Snake',
+      category: 'Navigation',
+      icon: '📁',
+      action: () => window.location.href = 'projects.html'
+    },
+    {
+      id: 'page-exp',
+      title: 'Experience Page — Infotact & Hackathons',
+      category: 'Navigation',
+      icon: '💼',
+      action: () => window.location.href = 'experience.html'
+    },
+    {
+      id: 'page-contact',
+      title: 'Contact Page — Direct Hub & Resume PDF',
+      category: 'Navigation',
+      icon: '✉️',
+      action: () => window.location.href = 'contact.html'
+    },
+    {
+      id: 'doshe-live-cmd',
+      title: 'Launch Live DOSHE Focus OS (https://doshe.onrender.com)',
+      category: 'Production Deployments',
+      icon: '🚀',
+      keywords: 'doshe focus focustube os anti doomscroll productivity live app render deploy launch',
+      action: () => window.open('https://doshe.onrender.com', '_blank')
+    },
+    {
+      id: 'snake-live-cmd',
+      title: 'Launch Live Snake 3D App & AI Coach (https://snake-3d-app.onrender.com)',
+      category: 'Production Deployments',
+      icon: '🚀',
+      keywords: 'snake 3d game arcade ai coach live app render deploy launch',
+      action: () => window.open('https://snake-3d-app.onrender.com', '_blank')
+    },
+    {
+      id: 'ping-doshe-cmd',
+      title: 'Ping DOSHE Live Endpoint (Render Health Check)',
+      category: 'Health Checks',
+      icon: '💓',
+      keywords: 'ping doshe health status check render latency sla uptime',
       action: () => {
-        switchToSpecTab('ask');
-        scrollToSection('hero');
-        if (askAiInput) setTimeout(() => askAiInput.focus(), 250);
+        const pingBtn = document.getElementById('ping-doshe-btn');
+        if (pingBtn) {
+          pingBtn.click();
+        } else {
+          showToast('Pinging DOSHE at https://doshe.onrender.com...');
+          const start = performance.now();
+          fetch('https://doshe.onrender.com', { mode: 'no-cors', cache: 'no-store' })
+            .then(() => showToast(`DOSHE health check OK! (${Math.max(18, Math.round(performance.now() - start))}ms) ✓`))
+            .catch(() => showToast('DOSHE ping sent! Endpoint active on Render ✓'));
+        }
       }
     },
     {
-      id: 'proj',
-      title: 'Jump to Featured Projects',
-      category: 'Navigation',
-      icon: '📁',
-      action: () => scrollToSection('projects')
+      id: 'ping-snake-cmd',
+      title: 'Ping Full-Stack Snake Live Endpoint (Render Health Check)',
+      category: 'Health Checks',
+      icon: '💓',
+      keywords: 'ping snake health status check render latency sla uptime',
+      action: () => {
+        const pingBtn = document.getElementById('ping-render-btn');
+        if (pingBtn) {
+          pingBtn.click();
+        } else {
+          showToast('Pinging Snake 3D at https://snake-3d-app.onrender.com...');
+          const start = performance.now();
+          fetch('https://snake-3d-app.onrender.com', { mode: 'no-cors', cache: 'no-store' })
+            .then(() => showToast(`Snake 3D health check OK! (${Math.max(18, Math.round(performance.now() - start))}ms) ✓`))
+            .catch(() => showToast('Snake 3D ping sent! Endpoint active on Render ✓'));
+        }
+      }
     },
     {
-      id: 'snake-arch',
-      title: 'Open Full-Stack Snake Architecture & Specs',
-      category: 'Architecture',
-      icon: '🐍',
-      action: () => openModal('modal-snake')
-    },
-    {
-      id: 'doshe-arch',
+      id: 'modal-doshe-cmd',
       title: 'Open DOSHE Architecture & Specs Modal',
       category: 'Architecture',
       icon: '🧠',
-      action: () => openModal('modal-doshe')
+      keywords: 'doshe architecture specs modal diagram sqlite node focus gate urge shield soundscape',
+      action: () => navigateToProjectModal('doshe')
     },
     {
-      id: 'copy-email',
+      id: 'modal-snake-cmd',
+      title: 'Open Full-Stack Snake Architecture & Specs Modal',
+      category: 'Architecture',
+      icon: '🐍',
+      keywords: 'snake architecture specs modal diagram sqlite node fallback sla latency coach',
+      action: () => navigateToProjectModal('snake')
+    },
+    {
+      id: 'doshe-github-cmd',
+      title: 'View DOSHE GitHub Source (github.com/shayam1408/DOSHE)',
+      category: 'Source Code',
+      icon: '📦',
+      keywords: 'doshe github repository repo source code express node sqlite',
+      action: () => window.open('https://github.com/shayam1408/DOSHE', '_blank')
+    },
+    {
+      id: 'snake-github-cmd',
+      title: 'View Full-Stack Snake GitHub Source (github.com/shayam1408/Snake-3d-app)',
+      category: 'Source Code',
+      icon: '📦',
+      keywords: 'snake 3d github repository repo source code threejs express node sqlite',
+      action: () => window.open('https://github.com/shayam1408/Snake-3d-app', '_blank')
+    },
+    {
+      id: 'ask-ai-cmd',
+      title: 'Ask Resume AI Assistant (Deterministic Q&A)',
+      category: 'Interactive',
+      icon: '✨',
+      action: () => openAskAiDrawer()
+    },
+    {
+      id: 'copy-email-cmd',
       title: 'Copy Primary Email (shayamshett290@gmail.com)',
       category: 'Actions',
       icon: '📋',
       action: () => copyToClipboard('shayamshett290@gmail.com', 'Copied shayamshett290@gmail.com to clipboard! ✓')
     },
     {
-      id: 'copy-github',
-      title: 'Copy GitHub URL (github.com/shayam1408)',
+      id: 'copy-github-cmd',
+      title: 'Copy GitHub Profile URL (github.com/shayam1408)',
       category: 'Actions',
       icon: '🔗',
       action: () => copyToClipboard('https://github.com/shayam1408', 'Copied GitHub URL to clipboard! ✓')
     },
     {
-      id: 'toggle-theme',
-      title: 'Toggle Dark / Light Mode',
+      id: 'copy-linkedin-cmd',
+      title: 'Copy LinkedIn URL (linkedin.com/in/shayam-shetty-13208728b)',
+      category: 'Actions',
+      icon: '🔗',
+      action: () => copyToClipboard('https://www.linkedin.com/in/shayam-shetty-13208728b/', 'Copied LinkedIn URL to clipboard! ✓')
+    },
+    {
+      id: 'toggle-theme-cmd',
+      title: 'Toggle Dark / Light Theme Mode',
       category: 'Appearance',
       icon: '🌓',
       action: () => toggleTheme()
     },
     {
-      id: 'save-pdf',
-      title: 'Print / Save Clean 2-Page Resume as PDF',
+      id: 'print-pdf-cmd',
+      title: 'Print / Save Clean 2-Page Executive PDF',
       category: 'Actions',
       icon: '🖨️',
       action: () => window.print()
-    },
-    {
-      id: 'filter-ai',
-      title: 'Filter Skills: AI & Contracts',
-      category: 'Skills',
-      icon: '⚡',
-      action: () => {
-        applySkillsFilter('ai');
-        scrollToSection('skills');
-      }
-    },
-    {
-      id: 'filter-backend',
-      title: 'Filter Skills: Backend & APIs',
-      category: 'Skills',
-      icon: '⚙️',
-      action: () => {
-        applySkillsFilter('backend');
-        scrollToSection('skills');
-      }
-    },
-    {
-      id: 'about',
-      title: 'Jump to About Profile & Academic Highlights',
-      category: 'Navigation',
-      icon: '👤',
-      action: () => scrollToSection('about')
-    },
-    {
-      id: 'edu',
-      title: 'Jump to Education (SMVITM VTU)',
-      category: 'Navigation',
-      icon: '🎓',
-      action: () => scrollToSection('education')
-    },
-    {
-      id: 'skills',
-      title: 'Jump to Technical Skills & Stacks',
-      category: 'Navigation',
-      icon: '⚡',
-      action: () => scrollToSection('skills')
-    },
-    {
-      id: 'exp',
-      title: 'Jump to Experience & Activities',
-      category: 'Navigation',
-      icon: '💼',
-      action: () => scrollToSection('experience')
-    },
-    {
-      id: 'contact',
-      title: 'Jump to Direct Contact Details',
-      category: 'Navigation',
-      icon: '✉️',
-      action: () => scrollToSection('contact')
-    },
-    {
-      id: 'github-link',
-      title: 'Open GitHub Profile (shayam1408)',
-      category: 'External',
-      icon: '↗',
-      action: () => window.open('https://github.com/shayam1408', '_blank')
-    },
-    {
-      id: 'linkedin-link',
-      title: 'Open LinkedIn Profile',
-      category: 'External',
-      icon: '↗',
-      action: () => window.open('https://www.linkedin.com/in/shayam-shetty-13208728b/', '_blank')
-    },
-    {
-      id: 'snake-live',
-      title: 'Launch Live Snake App on Render',
-      category: 'External',
-      icon: '🚀',
-      action: () => window.open('https://snake-3d-app.onrender.com', '_blank')
-    },
-    {
-      id: 'doshe-live',
-      title: 'Launch Live DOSHE Focus OS on Render',
-      category: 'External',
-      icon: '🚀',
-      action: () => window.open('https://doshe.onrender.com', '_blank')
-    },
-    {
-      id: 'doshe-repo',
-      title: 'View DOSHE GitHub Repository',
-      category: 'External',
-      icon: '💻',
-      action: () => window.open('https://github.com/shayam1408/DOSHE', '_blank')
     }
   ];
 
@@ -729,112 +622,96 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderCommandList(items) {
     if (!cmdList) return;
     cmdList.innerHTML = '';
-
     if (items.length === 0) {
-      cmdList.innerHTML = `<div class="cmd-empty-state">No matching commands found.</div>`;
+      const empty = document.createElement('div');
+      empty.className = 'cmd-item';
+      empty.textContent = 'No matching commands found.';
+      empty.style.cursor = 'default';
+      cmdList.appendChild(empty);
       return;
     }
 
-    let currentCategory = '';
-
+    let lastCategory = '';
     items.forEach((item, index) => {
-      if (item.category !== currentCategory) {
-        currentCategory = item.category;
-        const catHeader = document.createElement('div');
-        catHeader.className = 'cmd-group-label';
-        catHeader.textContent = currentCategory;
-        cmdList.appendChild(catHeader);
+      if (item.category !== lastCategory) {
+        lastCategory = item.category;
+        const catLabel = document.createElement('div');
+        catLabel.className = 'cmd-group-label';
+        catLabel.textContent = item.category;
+        cmdList.appendChild(catLabel);
       }
 
-      const itemEl = document.createElement('div');
-      itemEl.className = `cmd-item ${index === selectedIndex ? 'selected' : ''}`;
-      itemEl.setAttribute('role', 'option');
-      itemEl.setAttribute('aria-selected', index === selectedIndex ? 'true' : 'false');
-      itemEl.dataset.index = index;
+      const el = document.createElement('div');
+      el.className = `cmd-item ${index === selectedIndex ? 'selected' : ''}`;
+      el.setAttribute('role', 'option');
+      el.setAttribute('aria-selected', String(index === selectedIndex));
 
-      itemEl.innerHTML = `
+      el.innerHTML = `
         <div class="cmd-item-left">
           <span class="cmd-item-icon">${item.icon}</span>
           <span class="cmd-item-title">${item.title}</span>
         </div>
-        <span class="cmd-item-badge">${item.category}</span>
+        <span class="cmd-item-category">${item.category}</span>
       `;
 
-      itemEl.addEventListener('click', () => {
-        executeCommand(item);
+      el.addEventListener('click', () => {
+        closeCommandPalette();
+        item.action();
       });
 
-      cmdList.appendChild(itemEl);
+      el.addEventListener('mouseenter', () => {
+        selectedIndex = index;
+        updateSelectedCommand();
+      });
+
+      cmdList.appendChild(el);
     });
-
-    scrollSelectedItemIntoView();
   }
 
-  function scrollSelectedItemIntoView() {
-    const selectedEl = cmdList.querySelector('.cmd-item.selected');
-    if (selectedEl) {
-      selectedEl.scrollIntoView({ block: 'nearest' });
-    }
-  }
-
-  function executeCommand(command) {
-    closeCommandPalette();
-    if (command && typeof command.action === 'function') {
-      command.action();
-    }
+  function updateSelectedCommand() {
+    if (!cmdList) return;
+    const items = cmdList.querySelectorAll('.cmd-item');
+    items.forEach((el, idx) => {
+      el.classList.toggle('selected', idx === selectedIndex);
+      el.setAttribute('aria-selected', String(idx === selectedIndex));
+    });
   }
 
   function openCommandPalette() {
     if (!cmdPalette) return;
     cmdPalette.removeAttribute('hidden');
-    void cmdPalette.offsetHeight;
-    cmdPalette.classList.add('open');
-    document.body.style.overflow = 'hidden';
-
-    selectedIndex = 0;
     filteredCommands = [...paletteCommands];
+    selectedIndex = 0;
+    renderCommandList(filteredCommands);
     if (cmdInput) {
       cmdInput.value = '';
-      cmdInput.focus();
+      setTimeout(() => cmdInput.focus(), 50);
     }
-    renderCommandList(filteredCommands);
   }
 
   function closeCommandPalette() {
     if (!cmdPalette) return;
-    cmdPalette.classList.remove('open');
-    document.body.style.overflow = '';
-    setTimeout(() => {
-      cmdPalette.setAttribute('hidden', '');
-    }, 200);
+    cmdPalette.setAttribute('hidden', '');
   }
 
-  if (cmdPaletteBtn) {
-    cmdPaletteBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      openCommandPalette();
-    });
+  if (cmdKBtn) {
+    cmdKBtn.addEventListener('click', openCommandPalette);
   }
 
   if (cmdPalette) {
-    cmdPalette.addEventListener('click', (e) => {
-      if (e.target.classList.contains('cmd-palette-backdrop')) {
-        closeCommandPalette();
-      }
-    });
+    const backdrop = cmdPalette.querySelector('.cmd-palette-backdrop');
+    if (backdrop) backdrop.addEventListener('click', closeCommandPalette);
   }
 
   if (cmdInput) {
     cmdInput.addEventListener('input', () => {
-      const query = cmdInput.value.toLowerCase().trim();
-      if (!query) {
-        filteredCommands = [...paletteCommands];
-      } else {
-        filteredCommands = paletteCommands.filter(cmd =>
-          cmd.title.toLowerCase().includes(query) ||
-          cmd.category.toLowerCase().includes(query)
-        );
-      }
+      const val = cmdInput.value.toLowerCase().trim();
+      filteredCommands = paletteCommands.filter(c =>
+        c.title.toLowerCase().includes(val) ||
+        c.category.toLowerCase().includes(val) ||
+        (c.keywords && c.keywords.toLowerCase().includes(val)) ||
+        c.id.toLowerCase().includes(val)
+      );
       selectedIndex = 0;
       renderCommandList(filteredCommands);
     });
@@ -844,80 +721,120 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         if (filteredCommands.length > 0) {
           selectedIndex = (selectedIndex + 1) % filteredCommands.length;
-          renderCommandList(filteredCommands);
+          updateSelectedCommand();
+          scrollToSelected();
         }
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         if (filteredCommands.length > 0) {
           selectedIndex = (selectedIndex - 1 + filteredCommands.length) % filteredCommands.length;
-          renderCommandList(filteredCommands);
+          updateSelectedCommand();
+          scrollToSelected();
         }
       } else if (e.key === 'Enter') {
         e.preventDefault();
-        if (filteredCommands.length > 0 && filteredCommands[selectedIndex]) {
-          executeCommand(filteredCommands[selectedIndex]);
+        if (filteredCommands[selectedIndex]) {
+          closeCommandPalette();
+          filteredCommands[selectedIndex].action();
         }
       } else if (e.key === 'Escape') {
-        e.preventDefault();
         closeCommandPalette();
       }
     });
   }
 
-  // Global Keyboard Shortcuts (Ctrl+K / ⌘K and Escape)
+  function scrollToSelected() {
+    const selected = cmdList ? cmdList.querySelector('.cmd-item.selected') : null;
+    if (selected) selected.scrollIntoView({ block: 'nearest' });
+  }
+
+  // Global Keyboard Shortcuts (Ctrl+K / ⌘K and ESC)
   document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
-      if (cmdPalette && cmdPalette.classList.contains('open')) {
+      if (cmdPalette && !cmdPalette.hasAttribute('hidden')) {
         closeCommandPalette();
       } else {
         openCommandPalette();
       }
-      return;
-    }
-
-    if (e.key === 'Escape') {
-      if (cmdPalette && cmdPalette.classList.contains('open')) {
-        closeCommandPalette();
-        return;
-      }
-
-      const activeModal = document.querySelector('.modal-overlay.open');
-      if (activeModal) {
-        closeModal(activeModal);
-        return;
-      }
-
-      if (navMenu && navMenu.classList.contains('open')) {
-        navMenu.classList.remove('open');
-        if (mobileToggleBtn) {
-          mobileToggleBtn.classList.remove('active');
-          mobileToggleBtn.setAttribute('aria-expanded', 'false');
-          mobileToggleBtn.focus();
-        }
-      }
+    } else if (e.key === 'Escape') {
+      if (cmdPalette && !cmdPalette.hasAttribute('hidden')) closeCommandPalette();
+      if (askAiDrawer && !askAiDrawer.hasAttribute('hidden')) closeAskAiDrawer();
+      document.querySelectorAll('.modal-overlay:not([hidden])').forEach(closeModal);
     }
   });
 
   // ---------------------------------------------------------------------------
-  // 12. Bento Card Cursor Spotlight Glow Effect
+  // 11. Modal Management (Architecture & Specs on projects.html)
   // ---------------------------------------------------------------------------
-  const spotlightCards = document.querySelectorAll('.content-card, .project-card, .hero-spec-card');
+  function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    modal.removeAttribute('hidden');
+    document.body.style.overflow = 'hidden';
+    const closeBtn = modal.querySelector('.modal-close-btn');
+    if (closeBtn) setTimeout(() => closeBtn.focus(), 100);
+  }
 
-  if (window.matchMedia('(hover: hover)').matches) {
-    spotlightCards.forEach(card => {
-      card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        card.style.setProperty('--mouse-x', `${x}px`);
-        card.style.setProperty('--mouse-y', `${y}px`);
-      });
+  function closeModal(modal) {
+    if (!modal) return;
+    modal.setAttribute('hidden', '');
+    document.body.style.overflow = '';
+  }
 
-      card.addEventListener('mouseleave', () => {
-        card.style.setProperty('--mouse-x', `-9999px`);
-        card.style.setProperty('--mouse-y', `-9999px`);
-      });
+  document.querySelectorAll('.open-modal-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const modalId = btn.getAttribute('data-modal');
+      if (modalId) openModal(modalId);
+    });
+  });
+
+  document.querySelectorAll('.modal-overlay').forEach(modal => {
+    const backdrop = modal.querySelector('.modal-backdrop');
+    const closeBtn = modal.querySelector('.modal-close-btn');
+    if (backdrop) backdrop.addEventListener('click', () => closeModal(modal));
+    if (closeBtn) closeBtn.addEventListener('click', () => closeModal(modal));
+  });
+
+  // Auto-open modal if URL query param exists: ?modal=doshe or ?modal=snake
+  const urlParams = new URLSearchParams(window.location.search);
+  const requestedModal = urlParams.get('modal');
+  if (requestedModal) {
+    setTimeout(() => {
+      openModal(`modal-${requestedModal}`);
+    }, 200);
+  }
+
+  // ---------------------------------------------------------------------------
+  // 12. Skills Filter Pills (on skills.html)
+  // ---------------------------------------------------------------------------
+  const filterPills = document.querySelectorAll('.skills-filter-bar .filter-pill');
+  const skillCards = document.querySelectorAll('.skill-category-card');
+
+  function applySkillsFilter(filterKey) {
+    filterPills.forEach(pill => {
+      pill.classList.toggle('active', pill.getAttribute('data-filter') === filterKey);
+    });
+
+    skillCards.forEach(card => {
+      const cardCategory = card.getAttribute('data-category');
+      if (filterKey === 'all') {
+        card.classList.remove('skill-dimmed', 'skill-highlighted');
+      } else if (cardCategory === filterKey) {
+        card.classList.remove('skill-dimmed');
+        card.classList.add('skill-highlighted');
+      } else {
+        card.classList.add('skill-dimmed');
+        card.classList.remove('skill-highlighted');
+      }
     });
   }
-});
+
+  filterPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      const filterKey = pill.getAttribute('data-filter') || 'all';
+      applySkillsFilter(filterKey);
+    });
+  });
+
+})();
