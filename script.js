@@ -389,10 +389,11 @@ document.addEventListener('DOMContentLoaded', () => {
       ]
     },
     doshe: {
-      text: "DOSHE is an intent-based anti-doomscrolling and productivity application concept. Rather than punitive site-blocking that causes user resistance, it inserts metacognitive micro-friction: an Intent Barrier Gate ('What is your primary intent right now?'), a 2-minute micro-commitment entry, and a 15-minute zero-clutter deep work sprint without dopamine gamification traps.",
+      text: "DOSHE is a full-stack focus operating system and anti-doomscrolling platform built with Node.js, Express, and SQLite, deployed live on Render (https://doshe.onrender.com). It features an Intent Barrier Gate with strict mode lock, a Top-3 Task Engine, FocusTube (distraction-free video learning using youtube-nocookie and an AI Study Coach), an Urge Shield mindful pause tool, and native Web Audio soundscapes.",
       actions: [
-        { label: "View Behavioral Flow & Specs", run: () => openModal('modal-doshe') },
-        { label: "Explore on GitHub ↗", run: () => window.open('https://github.com/shayam1408', '_blank') }
+        { label: "Launch Live DOSHE ↗", run: () => window.open('https://doshe.onrender.com', '_blank') },
+        { label: "View Architecture & Specs", run: () => openModal('modal-doshe') },
+        { label: "View GitHub Source ↗", run: () => window.open('https://github.com/shayam1408/DOSHE', '_blank') }
       ]
     },
     stack: {
@@ -430,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (q.includes('snake') || q.includes('coach') || q.includes('fallback') || q.includes('game') || q.includes('render')) {
       return resumeKnowledge.snake;
     }
-    if (q.includes('doshe') || q.includes('focus') || q.includes('doomscroll') || q.includes('distraction') || q.includes('mindful')) {
+    if (q.includes('doshe') || q.includes('focus') || q.includes('focustube') || q.includes('doomscroll') || q.includes('distraction') || q.includes('mindful') || q.includes('urge') || q.includes('soundscape') || q.includes('lock')) {
       return resumeKnowledge.doshe;
     }
     if (q.includes('stack') || q.includes('skill') || q.includes('tech') || q.includes('language') || q.includes('python') || q.includes('c++') || q.includes('node') || q.includes('docker') || q.includes('sql')) {
@@ -447,10 +448,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     return {
-      text: `Regarding "${rawQuery}": Shayam is a 4th-Year AI & ML engineer at SMVITM (VTU) specialized in full-stack web architectures (Express, SQLite, Docker) and bounded AI systems. Check out his Full-Stack Snake project, DOSHE focus concept, or technical skills below.`,
+      text: `Regarding "${rawQuery}": Shayam is a 4th-Year AI & ML engineer at SMVITM (VTU) specialized in full-stack web architectures (Node.js, Express, SQLite, Docker) and bounded AI systems. Check out his Full-Stack Snake & AI Coach, DOSHE Focus OS, or technical skills below.`,
       actions: [
-        { label: "Snake AI Fallback", run: () => openModal('modal-snake') },
-        { label: "DOSHE Focus Concept", run: () => openModal('modal-doshe') },
+        { label: "Full-Stack Snake", run: () => openModal('modal-snake') },
+        { label: "DOSHE Focus OS", run: () => openModal('modal-doshe') },
         { label: "Copy Email", run: () => copyToClipboard('shayamshett290@gmail.com', 'Copied email to clipboard! ✓') }
       ]
     };
@@ -597,7 +598,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       id: 'doshe-arch',
-      title: 'Open DOSHE Flow & Behavioral Architecture',
+      title: 'Open DOSHE Architecture & Specs Modal',
       category: 'Architecture',
       icon: '🧠',
       action: () => openModal('modal-doshe')
@@ -705,6 +706,20 @@ document.addEventListener('DOMContentLoaded', () => {
       category: 'External',
       icon: '🚀',
       action: () => window.open('https://snake-3d-app.onrender.com', '_blank')
+    },
+    {
+      id: 'doshe-live',
+      title: 'Launch Live DOSHE Focus OS on Render',
+      category: 'External',
+      icon: '🚀',
+      action: () => window.open('https://doshe.onrender.com', '_blank')
+    },
+    {
+      id: 'doshe-repo',
+      title: 'View DOSHE GitHub Repository',
+      category: 'External',
+      icon: '💻',
+      action: () => window.open('https://github.com/shayam1408/DOSHE', '_blank')
     }
   ];
 
