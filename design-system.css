@@ -1227,19 +1227,27 @@ button {
     margin: 0 0 4pt 0 !important;
   }
 
+  .print-contact-bar,
   .print-contact-row {
     font-size: 8pt !important;
     color: #334155 !important;
     display: flex !important;
     flex-wrap: wrap !important;
-    gap: 7pt !important;
+    gap: 6pt !important;
     align-items: center !important;
     line-height: 1.35 !important;
+    margin-top: 3pt !important;
   }
 
+  .print-contact-bar a,
   .print-contact-row a {
     color: #0369a1 !important;
     text-decoration: underline !important;
+  }
+
+  .print-contact-bar span,
+  .print-contact-row span {
+    color: #334155 !important;
   }
 
   .print-sep {
